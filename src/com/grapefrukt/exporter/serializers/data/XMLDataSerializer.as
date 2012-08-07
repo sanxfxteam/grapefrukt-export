@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -162,6 +162,7 @@ package com.grapefrukt.exporter.serializers.data {
 			for each (var part:AnimationPart in animation.parts) {
 				var partXML:XML = <Part></Part>;
 				partXML.@name = part.name;
+				partXML.@spriteid = part.getSpriteId();
 				for (var i:int = 0; i < part.frames.length; i++) {
 					var frameXML:XML = _serialize(part.frames[i]);
 					if (frameXML) {

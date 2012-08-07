@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -34,10 +34,12 @@ package com.grapefrukt.exporter.misc {
 	
 	public class Child {
 		public var name		:String = "";
+		public var spriteid :String = "";
 		public var frame	:int = 0;
 		
-		public function Child(name:String, frame:int) {
+		public function Child(name:String, spriteid:String, frame:int) {
 			this.frame = frame;
+			this.spriteid = spriteid;
 			this.name = name;
 		}
 	}

@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -39,6 +39,7 @@ or implied, of grapefrukt games.
 	
 	import flash.display.FrameLabel;
 	import flash.display.MovieClip;
+	import flash.utils.*;
 	
 	/**
 	 * ...
@@ -55,6 +56,7 @@ or implied, of grapefrukt games.
 		 */
 		public static function extract(list:AnimationCollection, target:MovieClip, ignore:Array = null):void {
 			Logger.log("AnimationExtractor", "extracting", target.toString());
+			list.name = getQualifiedClassName(target);
 			var fragments:Vector.<AnimationFragment> = getFragments(target);
 			
 			var parts:Vector.<Child> = ChildFinder.findMultiframe(target);
@@ -110,6 +112,7 @@ or implied, of grapefrukt games.
 		private static function getAnimation(mc:MovieClip, fragment:AnimationFragment, parts:Vector.<Child>):Animation {
 			var loopAt:int = -1;
 			if ( fragment.loops ) loopAt = fragment.totalFrameCount - fragment.loopFrameCount - 1;
+			Logger.log("AnimationExtractor", "animation name", fragment.name);
 			var animation:Animation = new Animation(fragment.name, fragment.totalFrameCount, loopAt, parts);
 			
 			for each(var part:Child in parts) {
@@ -135,7 +138,8 @@ or implied, of grapefrukt games.
 
 }
 import com.grapefrukt.exporter.animations.AnimationMarker;
-
+import com.grapefrukt.exporter.debug.Logger;
+	
 class AnimationFragment {
 	
 	private var _name	:String = 	"";
@@ -145,6 +149,7 @@ class AnimationFragment {
 	private var _markers:Vector.<AnimationMarker>;
 	
 	public function AnimationFragment(name:String, start:int) {
+		Logger.log("AnimationExtractor", "fragment", name);
 		_name = name;
 		_start = start;
 		_markers = new Vector.<AnimationMarker>;

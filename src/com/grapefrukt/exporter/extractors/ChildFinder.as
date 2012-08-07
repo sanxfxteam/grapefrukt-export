@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -33,7 +33,7 @@ package com.grapefrukt.exporter.extractors {
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
-	import flash.utils.getQualifiedClassName;
+	import flash.utils.*;
 	
 	/**
 	 * ...
@@ -43,28 +43,33 @@ package com.grapefrukt.exporter.extractors {
 	public class ChildFinder {
 		
 		public static function findMultiframe(target:MovieClip):Vector.<Child> {
+			Logger.log("ChildFinder", "findMultiframe");
 			var children:Object = { };
+			var childVector:Vector.<Child> = new Vector.<Child>;
 			
 			for (var frame:int = 1; frame <= target.totalFrames; frame++) {
 				target.gotoAndStop(frame);
 				for (var childIndex:int = 0; childIndex < target.numChildren; childIndex++) {
 					var name:String = target.getChildAt(childIndex).name;
-					if (!children[name]) children[name] = frame;
+					if (!children[name])
+					{
+						children[name] = frame;
+						var spriteid:String = getClassnameMovieclip(target.getChildAt(childIndex));
+						childVector.push(new Child(name, spriteid, frame));
+						Logger.log("ChildFinder", "child: " + name + " spriteid: " + spriteid);
+					}
 				}
-			}
-			
-			var childVector:Vector.<Child> = new Vector.<Child>;
-			for (var label:String in children) {
-				childVector.push(new Child(label, children[label]));
 			}
 			
 			return childVector;
 		}
 		
 		public static function findSingle(target:DisplayObjectContainer):Vector.<Child> {
+			Logger.log("ChildFinder", "findSingle");
 			var children:Vector.<Child> = new Vector.<Child>;
 			for (var i:int = 0; i < target.numChildren; i++) {
-				children.push(new Child(target.getChildAt(i).name, 0));
+				var spriteid:String = getClassnameMovieclip(target.getChildAt(i));
+				children.push(new Child(target.getChildAt(i).name, spriteid, 0));
 			}
 			
 			return children;
@@ -88,9 +93,18 @@ package com.grapefrukt.exporter.extractors {
 		public static function nameChildren(target:DisplayObjectContainer):void {
 			for (var i:int = 0; i < target.numChildren; i++) {
 				target.getChildAt(i).name = getName(target.getChildAt(i));
+				Logger.log("ChildFinder", "named instance:", target.getChildAt(i).name);
 			}
 		}
 		
+		public static function getClassnameMovieclip(instance:*): String {
+			var name:String = getQualifiedClassName(instance);
+			// strips package/namespace names
+			name = name.replace( /.*(\.|::)/, '');
+			// strips gfx from the end
+			name = name.replace(/gfx/i, '');
+			return name;
+		}
 		/**
 		 * Tries to figure out the name of the supplied object, if nothing can be found it is named after it's class name
 		 * @param	instance	The instance to try and name

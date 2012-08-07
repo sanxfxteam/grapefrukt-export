@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -37,10 +37,18 @@ package com.grapefrukt.exporter.animations {
 		
 		public var frames:Vector.<AnimationFrame>;
 		public var name:String;
+		public var spriteid:String;
 		
-		public function AnimationPart(name:String) {
+		public function AnimationPart(name:String, spriteid:String) {
 			this.name = name;
+			this.spriteid = spriteid;
 			frames = new Vector.<AnimationFrame>;
+		}
+		public function getSpriteId(): String {
+			return replaceAll(this.spriteid, '_', '-');
+		}
+		public static function replaceAll(strSource:String, strReplaceFrom:String, strReplaceTo:String):String {
+			return strSource == null ? null : strSource.replace(new RegExp(strReplaceFrom, 'g'), strReplaceTo);
 		}
 	}
 

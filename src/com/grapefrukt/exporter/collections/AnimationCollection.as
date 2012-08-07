@@ -36,6 +36,7 @@ package com.grapefrukt.exporter.collections {
 	
 	public class AnimationCollection {
 		
+		public var name:String;
 		private var _collection:Vector.<Animation>;
 		
 		public function AnimationCollection() {

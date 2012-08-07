@@ -59,7 +59,7 @@ package com.grapefrukt.exporter.animations {
 			_markers = new Vector.<AnimationMarker>;
 			
 			for each(var child:Child in parts) {
-				var aw:AnimationPart = new AnimationPart(child.name);
+				var aw:AnimationPart = new AnimationPart(child.name, child.spriteid);
 				_parts.push(aw);
 				_parts_dict[child.name] = aw;
 			}

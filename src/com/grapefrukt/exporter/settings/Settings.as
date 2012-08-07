@@ -28,7 +28,7 @@ package com.grapefrukt.exporter.settings {
 		/**
 		 * Extractors will ignore unnamed displayobjects by default, set to false to keep them too
 		 */
-		public static var ignoreUnnamed:Boolean = true;
+		public static var ignoreUnnamed:Boolean = false;
 		
 		/**
 		 * Default number of columns for multiframe textures
