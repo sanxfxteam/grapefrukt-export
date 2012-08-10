@@ -43,9 +43,7 @@ package com.grapefrukt.exporter.serializers.data {
 		}
 		
 		protected function _serialize(target:*) {
-			if (target is Animation)				return serializeAnimation(Animation(target));
 			if (target is AnimationCollection)		return serializeAnimationCollection(AnimationCollection(target));
-			if (target is AnimationFrame)			return serializeAnimationFrame(AnimationFrame(target));
 		}
 
 		protected function serializeChild(c:Child) {
@@ -57,6 +55,8 @@ package com.grapefrukt.exporter.serializers.data {
 			_output.writeFloat(r.height * 0.5);
 			writeString(c.text);
 			_output.writeFloat(c.textsize);
+			_output.writeUnsignedInt(c.textalign);
+			_output.writeUnsignedInt(c.bgcolor);
 		}
 		
 		protected function serializeAnimationCollection(collection:AnimationCollection) {
@@ -75,7 +75,7 @@ package com.grapefrukt.exporter.serializers.data {
 			_output.writeUTFBytes('Anco');
 			_output.writeUnsignedInt(collection.size);
 			for (var i:int = 0; i < collection.size; i++) {
-				_serialize(collection.getAtIndex(i));
+				serializeAnimation(collection.getAtIndex(i));
 			}
 		}
 		
@@ -97,15 +97,14 @@ package com.grapefrukt.exporter.serializers.data {
 			for each (var part:AnimationPart in animation.parts) {
 				_output.writeUTFBytes('Anpa');
 				writeString(part.name);
-				writeString(part.child.getSpriteId());
 				_output.writeUnsignedInt(part.frames.length);
 				for (var i:int = 0; i < part.frames.length; i++) {
-					_serialize(part.frames[i]);
+					serializeAnimationFrame(part.child, part.frames[i]);
 				}
 			}
 		}
 		
-		protected function serializeAnimationFrame(frame:AnimationFrame) {
+		protected function serializeAnimationFrame(child:Child, frame:AnimationFrame) {
 			var flags:int = 0;
 			const F_VISIBLE:int = 1;
 			
@@ -114,8 +113,15 @@ package com.grapefrukt.exporter.serializers.data {
 				
 			_output.writeUnsignedInt(flags);
 			if (frame.visible) {
-				_output.writeFloat(frame.x * 0.5);
-				_output.writeFloat(frame.y * 0.5);
+				var x:Number = frame.x;
+				var y:Number = frame.y;
+				if (child.spriteid == "TextField")
+				{
+					x += child.getRect().width * 0.5;
+					y += child.getRect().height * 0.5;
+				}
+				_output.writeFloat(x * 0.5);
+				_output.writeFloat(y * 0.5);
 				_output.writeFloat(frame.scaleX);
 				_output.writeFloat(frame.scaleY);
 				_output.writeFloat(frame.rotation * 0.0174532925);

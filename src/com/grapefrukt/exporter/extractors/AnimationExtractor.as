@@ -111,18 +111,31 @@ or implied, of grapefrukt games.
 			return fragments[fragments.length - 1];
 		}
 		
-		private static function isVisible(t:DisplayObject):Boolean
+		private static function isVisible(mc:MovieClip, t:DisplayObject):Boolean
 		{
-			if(t.stage == null)
-				return false;
-			var p:DisplayObjectContainer = t.parent;
-			while(!(p is Stage))
-			{
-				if(!p.visible)
-				   return false;
-				p = p.parent;
+			for (var childIndex:int = 0; childIndex < mc.numChildren; childIndex++) {
+				var dobj:DisplayObject = mc.getChildAt(childIndex);
+				if (dobj.name == t.name)
+					return true;
 			}
-			return true;
+			return false;
+		}
+		
+		private static function enumChildren(target:MovieClip)
+		{
+			var children:Object = { };
+			for (var frame:int = 1; frame <= target.totalFrames; frame++) {
+				target.gotoAndStop(frame);
+				for (var childIndex:int = 0; childIndex < target.numChildren; childIndex++) {
+					var dobj:DisplayObject = target.getChildAt(childIndex);
+					var name:String = dobj.name;
+					if (!children[name])
+					{
+						children[name] = children[name];
+						Logger.log("ChildFinder", "child: " + name + " frame: " + frame);
+					}
+				}
+			}
 		}
 		
 		private static function getAnimation(mc:MovieClip, fragment:AnimationFragment, parts:Vector.<Child>):Animation {
@@ -131,16 +144,22 @@ or implied, of grapefrukt games.
 			Logger.log("AnimationExtractor", "animation name", fragment.name);
 			var animation:Animation = new Animation(fragment.name, fragment.totalFrameCount, loopAt, parts);
 			
-			for each(var part:Child in parts) {
-				for (var frame:int = fragment.startFrame; frame <= fragment.endFrame; frame++){
-					mc.gotoAndStop(frame);
-					var child = mc[part.name];
-					if (child && child.visible) {
-						if (frame == fragment.startFrame)
+			var children:Object = { };
+			
+			for (var frame:int = fragment.startFrame; frame <= fragment.endFrame; frame++){
+				mc.gotoAndStop(frame);
+				for each(var part:Child in parts) {
+					var child = mc.getChildByName(part.name);
+					if (!child) {
+						child = part.display;
+					}
+					if (child && part.visible[frame - 1]) {
+						if (!children[part.name])
 						{
+							children[part.name] = true;
 							Logger.log("AnimationExtractor", "visible " + part.name + " at frame: " + frame.toString());
 						}
-						animation.setFrame(part.name, frame - fragment.startFrame, new AnimationFrame(true, child.x, child.y, child.scaleX, child.scaleY, child.rotation, child.alpha, Settings.scaleFactor));
+						animation.setFrame(part.name, frame - fragment.startFrame, part.frames[frame - 1]);
 					} else {
 						animation.setFrame(part.name, frame - fragment.startFrame, new AnimationFrame(false));
 					}

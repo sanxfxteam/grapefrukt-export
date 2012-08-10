@@ -30,6 +30,7 @@ package com.grapefrukt.exporter.misc {
 
 	import com.grapefrukt.exporter.debug.Logger;
 	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.utils.*;
@@ -38,6 +39,7 @@ package com.grapefrukt.exporter.misc {
 	import flash.text.TextFormatAlign;
 	import flash.display.Shape;
 	import flash.geom.Matrix;
+	import com.grapefrukt.exporter.animations.AnimationFrame;
 
 	/**
 	 * ...
@@ -53,8 +55,12 @@ package com.grapefrukt.exporter.misc {
 		public var textsize :Number;
 		public var textalign:Number;
 		public var bgcolor	:uint;
+		public var visible	:Vector.<Boolean>;
+		public var frames	:Vector.<AnimationFrame>;
+		public var display	:DisplayObject;
 		
-		public function Child(name:String, dobj:DisplayObject, frame:int) {
+		public function Child(name:String, dobj:DisplayObject, frame:int, totalframes:int) {
+			this.display = dobj;
 			this.frame = frame;
 			this.spriteid = getClassnameMovieclip(dobj);
 			this.rect = dobj.getBounds(dobj);
@@ -64,12 +70,24 @@ package com.grapefrukt.exporter.misc {
 				var t:TextField = TextField(dobj);
 				this.text = t.text;
 				var tf:TextFormat = t.defaultTextFormat;
-				this.textsize = Number(tf.size);
-				this.textalign = tf.align == TextFormatAlign.LEFT ? 1 : 0;
+				this.textsize = Number(tf.size) * 0.5;
+				switch (tf.align)
+				{
+				default:
+				case TextFormatAlign.CENTER:
+					this.textalign = 0x21;
+					break;
+				case TextFormatAlign.LEFT:
+					this.textalign = 0x22;
+					break;
+				case TextFormatAlign.RIGHT:
+					this.textalign = 0x23;
+					break;
+				}
 			}
-			else if (dobj is Shape)
+			if (dobj is MovieClip)
 			{
-				var s:Shape = Shape(dobj);
+				var s:MovieClip = MovieClip(dobj);
 				var bounds:Rectangle = s.getBounds(s.parent);
 				var offsetX = s.x - bounds.x;
 				var offsetY = s.y - bounds.y;
@@ -79,8 +97,24 @@ package com.grapefrukt.exporter.misc {
 				var bd:BitmapData = new BitmapData(s.width, s.height); 
 				bd.draw(s, matrix);
 				bgcolor = bd.getPixel(rect.width / 2, rect.height / 2);
-				Logger.log("Shape", "color", bgcolor.toString());
+				//Logger.log("Shape", "color", bgcolor.toString());
 			}
+			if (dobj is Shape)
+			{
+				var ds:Shape = Shape(dobj);
+				var bounds:Rectangle = ds.getBounds(ds.parent);
+				var offsetX = ds.x - bounds.x;
+				var offsetY = ds.y - bounds.y;
+				var matrix:Matrix = ds.transform.matrix;
+				matrix.tx = offsetX;
+				matrix.ty = offsetY;
+				var bd:BitmapData = new BitmapData(ds.width, ds.height); 
+				bd.draw(ds, matrix);
+				bgcolor = bd.getPixel(rect.width / 2, rect.height / 2);
+				//Logger.log("Shape", "color", bgcolor.toString());
+			}			
+			this.visible = new Vector.<Boolean>(totalframes, false);
+			this.frames = new Vector.<AnimationFrame>(totalframes, null);
 		}
 		
 		public function getSpriteId(): String {
@@ -95,6 +129,15 @@ package com.grapefrukt.exporter.misc {
 			return strSource == null ? null : strSource.replace(new RegExp(strReplaceFrom, 'g'), strReplaceTo);
 		}
 		
+		public function setFrame(frame:uint, af:AnimationFrame) {
+			frames[frame] = af;
+		}
+		
+		public function setVisible(frame:uint) {
+			//Logger.log("Child", name + " isvisible at frame:", frame.toString());
+			visible[frame] = true;
+		}
+
 		public static function getClassnameMovieclip(instance:*): String {
 			var name:String = getQualifiedClassName(instance);
 			// strips package/namespace names

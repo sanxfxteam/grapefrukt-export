@@ -79,6 +79,7 @@ package com.grapefrukt.exporter.serializers.data {
 			partXML.@rectheight = r.height;
 			if (c.text) partXML.@text = c.text;
 			if (c.textsize) partXML.@textsize = c.textsize;
+			if (c.textalign) partXML.@textalign = c.textalign;
 			if (c.bgcolor) partXML.@bgcolor = c.bgcolor;
 			return partXML;
 		}

@@ -30,6 +30,7 @@ package com.grapefrukt.exporter.extractors {
 	import com.grapefrukt.exporter.debug.Logger;
 	import com.grapefrukt.exporter.misc.Child;
 	import com.grapefrukt.exporter.settings.Settings;
+	import com.grapefrukt.exporter.animations.AnimationFrame;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -55,11 +56,13 @@ package com.grapefrukt.exporter.extractors {
 					var name:String = dobj.name;
 					if (!children[name])
 					{
-						children[name] = frame;
-						var child:Child = new Child(name, dobj, frame);
+						var child:Child = new Child(name, dobj, frame, target.totalFrames);
+						children[name] = child;
 						childVector.push(child);
 						Logger.log("ChildFinder", "child: " + name + " spriteid: " + child.getSpriteId() + " frame: " + frame);
 					}
+					children[name].setVisible(frame);
+					children[name].setFrame(frame, new AnimationFrame(true, dobj.x, dobj.y, dobj.scaleX, dobj.scaleY, dobj.rotation, dobj.alpha, Settings.scaleFactor))
 				}
 			}
 			
@@ -70,7 +73,9 @@ package com.grapefrukt.exporter.extractors {
 			Logger.log("ChildFinder", "findSingle");
 			var children:Vector.<Child> = new Vector.<Child>;
 			for (var i:int = 0; i < target.numChildren; i++) {
-				children.push(new Child(target.getChildAt(i).name, target.getChildAt(i), 0));
+				var child:Child = new Child(target.getChildAt(i).name, target.getChildAt(i), 0, 1);
+				child.setVisible(0);
+				children.push(child);
 			}
 			
 			return children;
