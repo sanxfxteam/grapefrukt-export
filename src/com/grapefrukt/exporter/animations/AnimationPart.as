@@ -28,6 +28,8 @@ or implied, of grapefrukt games.
 
 package com.grapefrukt.exporter.animations {
 	
+	import com.grapefrukt.exporter.misc.Child;
+	
 	/**
 	 * ...
 	 * @author Martin Jonasson, m@grapefrukt.com
@@ -37,18 +39,12 @@ package com.grapefrukt.exporter.animations {
 		
 		public var frames:Vector.<AnimationFrame>;
 		public var name:String;
-		public var spriteid:String;
+		public var child:Child;
 		
-		public function AnimationPart(name:String, spriteid:String) {
+		public function AnimationPart(name:String, child:Child) {
 			this.name = name;
-			this.spriteid = spriteid;
+			this.child = child;
 			frames = new Vector.<AnimationFrame>;
-		}
-		public function getSpriteId(): String {
-			return replaceAll(this.spriteid, '_', '-');
-		}
-		public static function replaceAll(strSource:String, strReplaceFrom:String, strReplaceTo:String):String {
-			return strSource == null ? null : strSource.replace(new RegExp(strReplaceFrom, 'g'), strReplaceTo);
 		}
 	}
 

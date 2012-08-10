@@ -27,6 +27,18 @@ or implied, of grapefrukt games.
 */
 
 package com.grapefrukt.exporter.misc {
+
+	import com.grapefrukt.exporter.debug.Logger;
+	import flash.display.DisplayObject;
+	import flash.display.BitmapData;
+	import flash.geom.Rectangle;
+	import flash.utils.*;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.display.Shape;
+	import flash.geom.Matrix;
+
 	/**
 	 * ...
 	 * @author Martin Jonasson, m@grapefrukt.com
@@ -36,11 +48,60 @@ package com.grapefrukt.exporter.misc {
 		public var name		:String = "";
 		public var spriteid :String = "";
 		public var frame	:int = 0;
+		public var rect		:Rectangle;
+		public var text		:String;
+		public var textsize :Number;
+		public var textalign:Number;
+		public var bgcolor	:uint;
 		
-		public function Child(name:String, spriteid:String, frame:int) {
+		public function Child(name:String, dobj:DisplayObject, frame:int) {
 			this.frame = frame;
-			this.spriteid = spriteid;
+			this.spriteid = getClassnameMovieclip(dobj);
+			this.rect = dobj.getBounds(dobj);
 			this.name = name;
+			if (dobj is TextField)
+			{
+				var t:TextField = TextField(dobj);
+				this.text = t.text;
+				var tf:TextFormat = t.defaultTextFormat;
+				this.textsize = Number(tf.size);
+				this.textalign = tf.align == TextFormatAlign.LEFT ? 1 : 0;
+			}
+			else if (dobj is Shape)
+			{
+				var s:Shape = Shape(dobj);
+				var bounds:Rectangle = s.getBounds(s.parent);
+				var offsetX = s.x - bounds.x;
+				var offsetY = s.y - bounds.y;
+				var matrix:Matrix = s.transform.matrix;
+				matrix.tx = offsetX;
+				matrix.ty = offsetY;
+				var bd:BitmapData = new BitmapData(s.width, s.height); 
+				bd.draw(s, matrix);
+				bgcolor = bd.getPixel(rect.width / 2, rect.height / 2);
+				Logger.log("Shape", "color", bgcolor.toString());
+			}
+		}
+		
+		public function getSpriteId(): String {
+			return replaceAll(this.spriteid, '_', '-');
+		}
+		
+		public function getRect():Rectangle {
+			return rect;
+		}
+		
+		public static function replaceAll(strSource:String, strReplaceFrom:String, strReplaceTo:String):String {
+			return strSource == null ? null : strSource.replace(new RegExp(strReplaceFrom, 'g'), strReplaceTo);
+		}
+		
+		public static function getClassnameMovieclip(instance:*): String {
+			var name:String = getQualifiedClassName(instance);
+			// strips package/namespace names
+			name = name.replace( /.*(\.|::)/, '');
+			// strips gfx from the end
+			name = name.replace(/gfx/i, '');
+			return name;
 		}
 	}
 }

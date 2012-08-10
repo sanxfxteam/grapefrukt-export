@@ -42,6 +42,7 @@ package com.grapefrukt.exporter.simple {
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;	
 	import flash.filesystem.FileStream;	
+	import flash.utils.ByteArray;
 	
 	/**
 	 * This class is mainly for usage in Flash Authoring, it encapsulates all the extracting/exporting into a 
@@ -58,6 +59,7 @@ package com.grapefrukt.exporter.simple {
 		private var _binary_serializer	:IDataSerializer;
 		private var _image_serializer	:IImageSerializer;
 		private var _file_serializer	:IFileSerializer;
+		private var _deploy_file_serializer	:IFileSerializer;
 		
 		private var _textures			:TextureSheetCollection;
 		private var _animations			:AnimationCollection;
@@ -94,6 +96,7 @@ package com.grapefrukt.exporter.simple {
 			_binary_serializer	= new CustomDataSerializer;
 			// the file serializer is responsible for writing the files to disk, or in this case output a zip file
 			_file_serializer 	= new FileOutSerializer(_config.@exportanimpath, FileOutSerializer.OVERWRITE_ALL);
+			_deploy_file_serializer = new FileOutSerializer(_config.@deployanimpath, FileOutSerializer.OVERWRITE_ALL);
 			
 			// the texture exporter uses the queue for exporting the images, this is where most of the time in 
 			// the export is spent
@@ -146,7 +149,7 @@ package com.grapefrukt.exporter.simple {
 		
 		private function handleQueueComplete(e:FunctionQueueEvent):void {
 			_gui.setProgress(1);
-			_gui.setText("click to output!");
+			_gui.setText("done!");
 			_gui.buttonMode = true;
 		}
 		
@@ -170,8 +173,12 @@ package com.grapefrukt.exporter.simple {
 				
 				if (_animations.size) {
 					Logger.log("CustomExport", "exporting animation xml");
-					_file_serializer.serialize("animations.xml", _data_serializer.serialize(_animations));
-					_file_serializer.serialize(_animations.name + ".anim", _binary_serializer.serialize(_animations));
+					
+					_file_serializer.serialize(_animations.name + ".xml", _data_serializer.serialize(_animations));
+					
+					var anim:ByteArray = _binary_serializer.serialize(_animations);
+					_file_serializer.serialize(_animations.name + ".anim", anim);
+					_deploy_file_serializer.serialize(_animations.name + ".anim", anim);
 				} else {
 					Logger.log("CustomExport", "no animations to export");
 				}

@@ -31,6 +31,7 @@ package com.grapefrukt.exporter.serializers.data {
 	import com.grapefrukt.exporter.animations.AnimationFrame;
 	import com.grapefrukt.exporter.animations.AnimationMarker;
 	import com.grapefrukt.exporter.animations.AnimationPart;
+	import com.grapefrukt.exporter.misc.Child;
 	import com.grapefrukt.exporter.collections.AnimationCollection;
 	import com.grapefrukt.exporter.collections.TextureSheetCollection;
 	import com.grapefrukt.exporter.settings.Settings;
@@ -41,6 +42,7 @@ package com.grapefrukt.exporter.serializers.data {
 	import com.grapefrukt.exporter.textures.TextureSheet;
 	import com.grapefrukt.exporter.textures.VectorTexture;
 	import flash.utils.ByteArray;
+	import flash.geom.Rectangle;
 	
 	
 	/**
@@ -59,13 +61,7 @@ package com.grapefrukt.exporter.serializers.data {
 		}
 		
 		protected function _serialize(target:*):XML {
-			if (target is FontSheet)	 			return serializeFontSheet(FontSheet(target));
-			
-			if (target is VectorTexture) 			return serializeVectorTexture(VectorTexture(target));
-			if (target is BitmapTexture) 			return serializeTexture(BitmapTexture(target));
-			if (target is TextureSheet) 			return serializeTextureSheet(TextureSheet(target));
-			if (target is TextureSheetCollection) 	return serializeTextureSheetCollection(TextureSheetCollection(target));
-			
+
 			if (target is Animation)				return serializeAnimation(Animation(target));
 			if (target is AnimationCollection)		return serializeAnimationCollection(AnimationCollection(target));
 			if (target is AnimationFrame)			return serializeAnimationFrame(AnimationFrame(target));
@@ -73,73 +69,39 @@ package com.grapefrukt.exporter.serializers.data {
 			throw new Error("no code to serialize " + target);
 			return null;
 		}
-		
-		protected function serializeVectorTexture(texture:VectorTexture):XML {
-			var xml:XML = <VectorTexture></VectorTexture>;
-			xml.@name 	= texture.name;
-			xml.@path 	= texture.filenameWithPath;
-			if (texture.isMask) xml.@mask = texture.isMask ? "1" : "0";
-			if (texture.zIndex != 0) xml.@zIndex = texture.zIndex;
-			return xml;
+
+		protected function serializeChild(c:Child) {
+			var partXML:XML = <Element></Element>;
+			partXML.@name = c.name;
+			partXML.@spriteid = c.getSpriteId();
+			var r:Rectangle = c.getRect();
+			partXML.@rectwidth = r.width;
+			partXML.@rectheight = r.height;
+			if (c.text) partXML.@text = c.text;
+			if (c.textsize) partXML.@textsize = c.textsize;
+			if (c.bgcolor) partXML.@bgcolor = c.bgcolor;
+			return partXML;
 		}
-		
-		protected function serializeTextureSheetCollection(collection:TextureSheetCollection):XML {
-			collection.sort();
-			var xml:XML = <Textures></Textures>
-			for (var i:int = 0; i < collection.size; i++) {
-				xml.appendChild(_serialize(collection.getAtIndex(i)));
-			}
-			return xml;
-		}
-		
-		protected function serializeTextureSheet(sheet:TextureSheet):XML {
-			var xml:XML = <TextureSheet></TextureSheet>;
-			xml.@name = sheet.name;
-			
-			sheet.sort();
-			
-			for each(var texture:TextureBase in sheet.textures) {
-				xml.appendChild(_serialize(texture))
-			}
-			
-			return xml;
-		}
-		
-		protected function serializeTexture(texture:BitmapTexture):XML {
-			var xml:XML = <Texture></Texture>;
-			xml.@name 	= texture.name;
-			xml.@width 	= Math.round(texture.bounds.width);
-			xml.@height = Math.round(texture.bounds.height);
-			xml.@path 	= texture.filenameWithPath;
-			
-			xml.@registrationPointX = texture.registrationPoint.x.toFixed(2);
-			xml.@registrationPointY = texture.registrationPoint.y.toFixed(2);
-			
-			if (texture.isMask) xml.@mask = texture.isMask ? "1" : "0";
-			if (texture.zIndex != 0) xml.@zIndex = texture.zIndex;
-			
-			
-			var mftexture:MultiframeBitmapTexture = texture as MultiframeBitmapTexture;
-			if (mftexture) {
-				xml.@frameCount 	= mftexture.frameCount;
-				xml.@frameWidth 	= mftexture.frameBounds.width;
-				xml.@frameHeight 	= mftexture.frameBounds.height;
-				xml.@columns 		= mftexture.columns;
-				
-				if (mftexture.framerate != Settings.defaultFramerate) xml.@framerate = mftexture.framerate;
-			}
-			
-			return xml;
-		}
-		
 		
 		protected function serializeAnimationCollection(collection:AnimationCollection):XML {
-			collection.sort();
-			var xml:XML = <Animations></Animations>
+			//collection.sort();
+			
+			var res:XML = <All></All>;
+			res.@name = collection.name;
+			
+			var elts:XML = <Elements></Elements>;
+			var animation:Animation = collection.getAtIndex(0);
+			for each (var part:AnimationPart in animation.parts) {
+				elts.appendChild(serializeChild(part.child));
+			}
+			res.appendChild(elts);
+			
+			var xml:XML = <Animations></Animations>;
 			for (var i:int = 0; i < collection.size; i++) {
 				xml.appendChild(_serialize(collection.getAtIndex(i)));
 			}
-			return xml;
+			res.appendChild(xml);
+			return res;
 		}
 		
 		protected function serializeAnimation(animation:Animation):XML {
@@ -162,7 +124,7 @@ package com.grapefrukt.exporter.serializers.data {
 			for each (var part:AnimationPart in animation.parts) {
 				var partXML:XML = <Part></Part>;
 				partXML.@name = part.name;
-				partXML.@spriteid = part.getSpriteId();
+				partXML.@spriteid = part.child.getSpriteId();
 				for (var i:int = 0; i < part.frames.length; i++) {
 					var frameXML:XML = _serialize(part.frames[i]);
 					if (frameXML) {
@@ -196,29 +158,6 @@ package com.grapefrukt.exporter.serializers.data {
 		
 		private function equal(value1:Number, value2:Number, precision:uint):Boolean {
 			return value1.toFixed(precision) == value2.toFixed(precision);
-		}
-		
-		protected function serializeFontSheet(sheet:FontSheet):XML {
-			var xml:XML = <FontData></FontData>;
-			xml.Texture = sheet.filenameWithPath;
-			xml.LineHeight = sheet.lineHeight;
-			xml.CharSpace = sheet.charSpace;
-			xml.WordSpace = sheet.wordSpace;
-			
-			sheet.sort();
-			
-			for each(var texture:BitmapTexture in sheet.unmergedTextures) {
-				var charXML:XML = XML("<Char>\n  </Char>");
-				charXML.@id		= texture.name.charCodeAt(0);
-				charXML.@rect_x = texture.bounds.x;
-				charXML.@rect_y = texture.bounds.y;
-				charXML.@rect_w = texture.bounds.width;
-				charXML.@rect_h = texture.bounds.height;
-				
-				xml.appendChild(charXML);
-			}
-			
-			return xml;
 		}
 		
 	}

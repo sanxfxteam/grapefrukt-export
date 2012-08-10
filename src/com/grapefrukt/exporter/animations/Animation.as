@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -59,7 +59,7 @@ package com.grapefrukt.exporter.animations {
 			_markers = new Vector.<AnimationMarker>;
 			
 			for each(var child:Child in parts) {
-				var aw:AnimationPart = new AnimationPart(child.name, child.spriteid);
+				var aw:AnimationPart = new AnimationPart(child.name, child);
 				_parts.push(aw);
 				_parts_dict[child.name] = aw;
 			}

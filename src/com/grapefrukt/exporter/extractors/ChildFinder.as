@@ -31,6 +31,7 @@ package com.grapefrukt.exporter.extractors {
 	import com.grapefrukt.exporter.misc.Child;
 	import com.grapefrukt.exporter.settings.Settings;
 	
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.utils.*;
@@ -50,13 +51,14 @@ package com.grapefrukt.exporter.extractors {
 			for (var frame:int = 1; frame <= target.totalFrames; frame++) {
 				target.gotoAndStop(frame);
 				for (var childIndex:int = 0; childIndex < target.numChildren; childIndex++) {
-					var name:String = target.getChildAt(childIndex).name;
+					var dobj:DisplayObject = target.getChildAt(childIndex);
+					var name:String = dobj.name;
 					if (!children[name])
 					{
 						children[name] = frame;
-						var spriteid:String = getClassnameMovieclip(target.getChildAt(childIndex));
-						childVector.push(new Child(name, spriteid, frame));
-						Logger.log("ChildFinder", "child: " + name + " spriteid: " + spriteid);
+						var child:Child = new Child(name, dobj, frame);
+						childVector.push(child);
+						Logger.log("ChildFinder", "child: " + name + " spriteid: " + child.getSpriteId() + " frame: " + frame);
 					}
 				}
 			}
@@ -68,8 +70,7 @@ package com.grapefrukt.exporter.extractors {
 			Logger.log("ChildFinder", "findSingle");
 			var children:Vector.<Child> = new Vector.<Child>;
 			for (var i:int = 0; i < target.numChildren; i++) {
-				var spriteid:String = getClassnameMovieclip(target.getChildAt(i));
-				children.push(new Child(target.getChildAt(i).name, spriteid, 0));
+				children.push(new Child(target.getChildAt(i).name, target.getChildAt(i), 0));
 			}
 			
 			return children;
@@ -97,14 +98,6 @@ package com.grapefrukt.exporter.extractors {
 			}
 		}
 		
-		public static function getClassnameMovieclip(instance:*): String {
-			var name:String = getQualifiedClassName(instance);
-			// strips package/namespace names
-			name = name.replace( /.*(\.|::)/, '');
-			// strips gfx from the end
-			name = name.replace(/gfx/i, '');
-			return name;
-		}
 		/**
 		 * Tries to figure out the name of the supplied object, if nothing can be found it is named after it's class name
 		 * @param	instance	The instance to try and name

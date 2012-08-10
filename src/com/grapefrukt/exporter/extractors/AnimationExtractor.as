@@ -39,6 +39,9 @@ or implied, of grapefrukt games.
 	
 	import flash.display.FrameLabel;
 	import flash.display.MovieClip;
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.Stage;
 	import flash.utils.*;
 	
 	/**
@@ -108,6 +111,19 @@ or implied, of grapefrukt games.
 			return fragments[fragments.length - 1];
 		}
 		
+		private static function isVisible(t:DisplayObject):Boolean
+		{
+			if(t.stage == null)
+				return false;
+			var p:DisplayObjectContainer = t.parent;
+			while(!(p is Stage))
+			{
+				if(!p.visible)
+				   return false;
+				p = p.parent;
+			}
+			return true;
+		}
 		
 		private static function getAnimation(mc:MovieClip, fragment:AnimationFragment, parts:Vector.<Child>):Animation {
 			var loopAt:int = -1;
@@ -118,8 +134,13 @@ or implied, of grapefrukt games.
 			for each(var part:Child in parts) {
 				for (var frame:int = fragment.startFrame; frame <= fragment.endFrame; frame++){
 					mc.gotoAndStop(frame);
-					if (mc[part.name]) {
-						animation.setFrame(part.name, frame - fragment.startFrame, new AnimationFrame(true, mc[part.name].x, mc[part.name].y, mc[part.name].scaleX, mc[part.name].scaleY, mc[part.name].rotation, mc[part.name].alpha, Settings.scaleFactor));
+					var child = mc[part.name];
+					if (child && child.visible) {
+						if (frame == fragment.startFrame)
+						{
+							Logger.log("AnimationExtractor", "visible " + part.name + " at frame: " + frame.toString());
+						}
+						animation.setFrame(part.name, frame - fragment.startFrame, new AnimationFrame(true, child.x, child.y, child.scaleX, child.scaleY, child.rotation, child.alpha, Settings.scaleFactor));
 					} else {
 						animation.setFrame(part.name, frame - fragment.startFrame, new AnimationFrame(false));
 					}
