@@ -70,6 +70,7 @@ package com.grapefrukt.exporter.misc {
 				var t:TextField = TextField(dobj);
 				this.text = t.text;
 				var tf:TextFormat = t.defaultTextFormat;
+				this.bgcolor = uint(tf.color);
 				this.textsize = Number(tf.size) * 0.5;
 				switch (tf.align)
 				{
@@ -85,34 +86,19 @@ package com.grapefrukt.exporter.misc {
 					break;
 				}
 			}
-			if (dobj is MovieClip)
+			if (dobj is MovieClip || dobj is Shape)
 			{
-				var s:MovieClip = MovieClip(dobj);
-				var bounds:Rectangle = s.getBounds(s.parent);
-				var offsetX = s.x - bounds.x;
-				var offsetY = s.y - bounds.y;
-				var matrix:Matrix = s.transform.matrix;
+				var bounds:Rectangle = dobj.getBounds(dobj.parent);
+				var offsetX = dobj.x - bounds.x;
+				var offsetY = dobj.y - bounds.y;
+				var matrix:Matrix = dobj.transform.matrix;
 				matrix.tx = offsetX;
 				matrix.ty = offsetY;
-				var bd:BitmapData = new BitmapData(s.width, s.height); 
-				bd.draw(s, matrix);
+				var bd:BitmapData = new BitmapData(dobj.width, dobj.height); 
+				bd.draw(dobj, matrix);
 				bgcolor = bd.getPixel(rect.width / 2, rect.height / 2);
-				//Logger.log("Shape", "color", bgcolor.toString());
+				//Logger.log("MovieClip/Shape", "color", bgcolor.toString());
 			}
-			if (dobj is Shape)
-			{
-				var ds:Shape = Shape(dobj);
-				var bounds:Rectangle = ds.getBounds(ds.parent);
-				var offsetX = ds.x - bounds.x;
-				var offsetY = ds.y - bounds.y;
-				var matrix:Matrix = ds.transform.matrix;
-				matrix.tx = offsetX;
-				matrix.ty = offsetY;
-				var bd:BitmapData = new BitmapData(ds.width, ds.height); 
-				bd.draw(ds, matrix);
-				bgcolor = bd.getPixel(rect.width / 2, rect.height / 2);
-				//Logger.log("Shape", "color", bgcolor.toString());
-			}			
 			this.visible = new Vector.<Boolean>(totalframes, false);
 			this.frames = new Vector.<AnimationFrame>(totalframes, null);
 		}
