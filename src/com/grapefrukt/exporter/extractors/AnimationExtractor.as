@@ -141,10 +141,11 @@ or implied, of grapefrukt games.
 		private static function getAnimation(mc:MovieClip, fragment:AnimationFragment, parts:Vector.<Child>):Animation {
 			var loopAt:int = -1;
 			if ( fragment.loops ) loopAt = fragment.totalFrameCount - fragment.loopFrameCount - 1;
-			Logger.log("AnimationExtractor", "animation name", fragment.name);
 			var animation:Animation = new Animation(fragment.name, fragment.totalFrameCount, loopAt, parts);
-			
 			var children:Object = { };
+			Logger.log("AnimationExtractor", "animation: " + fragment.name 
+					   + " from: " + fragment.startFrame.toString()
+					   + " to: " + fragment.endFrame.toString());
 			
 			for (var frame:int = fragment.startFrame; frame <= fragment.endFrame; frame++){
 				mc.gotoAndStop(frame);

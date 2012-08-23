@@ -107,7 +107,6 @@ package com.grapefrukt.exporter.simple {
 			_textures 			= new TextureSheetCollection;
 			_animations			= new AnimationCollection;
 			
-			
 			if(root){
 				_queue.addEventListener(FunctionQueueEvent.CHANGE, 		handleQueueChange);
 				_queue.addEventListener(FunctionQueueEvent.COMPLETE, 	handleQueueComplete);

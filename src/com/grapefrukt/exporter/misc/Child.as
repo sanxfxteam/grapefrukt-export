@@ -71,7 +71,7 @@ package com.grapefrukt.exporter.misc {
 				this.text = t.text;
 				var tf:TextFormat = t.defaultTextFormat;
 				this.bgcolor = uint(tf.color);
-				this.textsize = Number(tf.size) * 0.5;
+				this.textsize = Number(tf.size) * 0.6;
 				switch (tf.align)
 				{
 				default:
@@ -116,12 +116,12 @@ package com.grapefrukt.exporter.misc {
 		}
 		
 		public function setFrame(frame:uint, af:AnimationFrame) {
-			frames[frame] = af;
+			frames[frame - 1] = af;
 		}
 		
 		public function setVisible(frame:uint) {
 			//Logger.log("Child", name + " isvisible at frame:", frame.toString());
-			visible[frame] = true;
+			visible[frame - 1] = true;
 		}
 
 		public static function getClassnameMovieclip(instance:*): String {

@@ -60,8 +60,6 @@ package com.grapefrukt.exporter.serializers.data {
 		}
 		
 		protected function serializeAnimationCollection(collection:AnimationCollection) {
-			collection.sort();
-			
 			_output.writeUTFBytes('Aprj');
 			writeString(collection.name);
 			
@@ -93,7 +91,6 @@ package com.grapefrukt.exporter.serializers.data {
 			}
 			
 			_output.writeUnsignedInt(animation.partCount);
-			animation.sort();
 			for each (var part:AnimationPart in animation.parts) {
 				_output.writeUTFBytes('Anpa');
 				writeString(part.name);

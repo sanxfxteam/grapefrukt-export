@@ -85,8 +85,6 @@ package com.grapefrukt.exporter.serializers.data {
 		}
 		
 		protected function serializeAnimationCollection(collection:AnimationCollection):XML {
-			//collection.sort();
-			
 			var res:XML = <All></All>;
 			res.@name = collection.name;
 			
@@ -112,8 +110,6 @@ package com.grapefrukt.exporter.serializers.data {
 			if (animation.loopAt != -1) 							xml.@loopAt = animation.loopAt;
 			if (animation.mask) 									xml.@mask	= animation.mask;
 			if (animation.framerate != Settings.defaultFramerate) 	xml.framerate	= animation.framerate;
-			
-			animation.sort();
 			
 			for each (var marker:AnimationMarker in animation.markers) {
 				var markerXML:XML = <Marker></Marker>;
