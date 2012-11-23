@@ -62,7 +62,7 @@ package com.grapefrukt.exporter.extractors {
 						Logger.log("ChildFinder", "child: " + name + " spriteid: " + child.getSpriteId() + " frame: " + frame);
 					}
 					children[name].setVisible(frame);
-					children[name].setFrame(frame, new AnimationFrame(true, dobj.x, dobj.y, dobj.scaleX, dobj.scaleY, dobj.rotation, dobj.alpha, Settings.scaleFactor))
+					children[name].setFrame(frame, new AnimationFrame(true, dobj.x, dobj.y, dobj.scaleX, dobj.scaleY, dobj.rotation, dobj.alpha, Settings.scaleFactor, childIndex));
 				}
 			}
 			

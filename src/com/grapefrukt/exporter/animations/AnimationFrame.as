@@ -44,9 +44,9 @@ package com.grapefrukt.exporter.animations {
 		private var _rotation	:Number;
 		private var _alpha		:Number;
 		private var _scale_factor:Number = 1;
+		private var _zindex		:Number = 0;
 		
-		
-		public function AnimationFrame(visible:Boolean, x:Number = 0, y:Number = 0, scaleX:Number = 0, scaleY:Number = 0, rotation:Number = 0, alpha:Number = 0, scaleFactor:Number = 1) {
+		public function AnimationFrame(visible:Boolean, x:Number = 0, y:Number = 0, scaleX:Number = 0, scaleY:Number = 0, rotation:Number = 0, alpha:Number = 0, scaleFactor:Number = 1, zindex:Number = 0) {
 			_visible = visible;
 			_x = x;
 			_y = y;
@@ -55,6 +55,7 @@ package com.grapefrukt.exporter.animations {
 			_rotation = rotation;
 			_alpha = alpha;
 			_scale_factor = scaleFactor;
+			_zindex = zindex;
 			
 			if (_alpha == 0) _visible = false;
 		}
@@ -67,7 +68,7 @@ package com.grapefrukt.exporter.animations {
 		public function get y():Number { return _y * _scale_factor; }
 		public function get x():Number { return _x * _scale_factor; }
 		public function get visible():Boolean { return _visible; }
-	
+		public function get zindex():Number { return _zindex; }
 		
 	}
 

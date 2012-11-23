@@ -40,11 +40,26 @@ package com.grapefrukt.exporter.animations {
 		public var frames:Vector.<AnimationFrame>;
 		public var name:String;
 		public var child:Child;
+		public var zindex:Number = -1;
 		
 		public function AnimationPart(name:String, child:Child) {
 			this.name = name;
 			this.child = child;
 			frames = new Vector.<AnimationFrame>;
+		}
+		
+		public function GetZIndex()
+		{
+			if (zindex < 0)
+			{
+				zindex = frames[0].zindex;
+				/* Gets the max but wrong
+				for (var i:int = 0; i < frames.length; i++) 
+					if (zindex < frames[i].zindex)
+						zindex = frames[i].zindex;
+				*/
+			}
+			return zindex;
 		}
 	}
 

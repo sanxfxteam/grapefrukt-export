@@ -30,6 +30,7 @@ or implied, of grapefrukt games.
 	
 	import adobe.utils.CustomActions;
 	import com.grapefrukt.exporter.animations.Animation;
+	import com.grapefrukt.exporter.animations.AnimationPart;
 	import com.grapefrukt.exporter.animations.AnimationFrame;
 	import com.grapefrukt.exporter.animations.AnimationMarker;
 	import com.grapefrukt.exporter.collections.AnimationCollection;
@@ -147,6 +148,15 @@ or implied, of grapefrukt games.
 					   + " from: " + fragment.startFrame.toString()
 					   + " to: " + fragment.endFrame.toString());
 			
+			/*
+			// Debug Code showing that mc is not the same instance as the one parsed by child finder, for some reason...
+			mc.gotoAndStop(fragment.startFrame);
+			for (var childIndex:int = 0; childIndex < mc.numChildren; childIndex++) {
+				var dobj:DisplayObject = mc.getChildAt(childIndex);
+				Logger.log("AnimationExtractor", dobj.name + " zindex = " + childIndex.toString());
+			}
+			*/
+			
 			for (var frame:int = fragment.startFrame; frame <= fragment.endFrame; frame++){
 				mc.gotoAndStop(frame);
 				for each(var part:Child in parts) {
@@ -171,6 +181,27 @@ or implied, of grapefrukt games.
 				marker.frame -= fragment.startFrame;
 				animation.markers.push(marker);
 			}
+			
+			// Sort parts by zindex
+			// Using the max Zindex at given point
+			// TODO: Wont work for all cases if a z-bottom part is invisible, all the zindex calculated will be 
+			// Example :
+			// Frame:	1	2	3
+			// Obj0:	z1	z1	/
+			// Obj1:	z2	z2	/
+			// Obj2:	z3	z3	z1
+			// Obj3:	/	/	z2
+			// Here : Obj3 will be under Obj2
+			// Should be:
+			// Frame:	1	2	3
+			// Obj0:	z1	z1	/
+			// Obj1:	z2	z2	/
+			// Obj2:	z3	z3	z3
+			// Obj3:	/	/	z4
+			var cmpr:Function = function(a:AnimationPart, b:AnimationPart):Number {
+				return a.GetZIndex() - b.GetZIndex();
+			}
+			animation.parts.sort(cmpr);
 			
 			return animation;
 		}
