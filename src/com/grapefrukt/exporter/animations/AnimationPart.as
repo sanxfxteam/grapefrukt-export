@@ -51,14 +51,7 @@ package com.grapefrukt.exporter.animations {
 		public function GetZIndex()
 		{
 			if (zindex < 0)
-			{
 				zindex = frames[0].zindex;
-				/* Gets the max but wrong
-				for (var i:int = 0; i < frames.length; i++) 
-					if (zindex < frames[i].zindex)
-						zindex = frames[i].zindex;
-				*/
-			}
 			return zindex;
 		}
 	}

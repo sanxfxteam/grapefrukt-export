@@ -104,10 +104,12 @@ package com.grapefrukt.exporter.serializers.data {
 		protected function serializeAnimationFrame(child:Child, frame:AnimationFrame) {
 			var flags:int = 0;
 			const F_VISIBLE:int = 1;
+			const F_MATRIX:int = 2;
 			
 			if (frame.visible)
 				flags |= F_VISIBLE;
-				
+			if (Settings.exportMatrix)
+				flags |= F_MATRIX;
 			_output.writeUnsignedInt(flags);
 			if (frame.visible) {
 				var x:Number = frame.x;
@@ -119,9 +121,19 @@ package com.grapefrukt.exporter.serializers.data {
 				}
 				_output.writeFloat(x * 0.5);
 				_output.writeFloat(y * 0.5);
-				_output.writeFloat(frame.scaleX);
-				_output.writeFloat(frame.scaleY);
-				_output.writeFloat(frame.rotation * 0.0174532925);
+				if (Settings.exportMatrix)
+				{
+					_output.writeFloat(frame.matrix.a);
+					_output.writeFloat(frame.matrix.b);
+					_output.writeFloat(frame.matrix.c);
+					_output.writeFloat(frame.matrix.d);
+				}
+				else
+				{
+					_output.writeFloat(frame.scaleX);
+					_output.writeFloat(frame.scaleY);
+					_output.writeFloat(frame.rotation * 0.0174532925);
+				}
 				_output.writeFloat(frame.alpha);
 			}
 		}

@@ -74,6 +74,11 @@ package com.grapefrukt.exporter.settings {
 		 */
 		static public var defaultFramerate:Number = 30;
 		
+		/*
+		* Export matrix for animation instead of rotation angle and scaleX/Y
+		*/
+		static public var exportMatrix:Boolean = false;
+		
 	}
 
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright 2011 Martin Jonasson, grapefrukt games. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are
@@ -28,6 +28,8 @@ or implied, of grapefrukt games.
 
 package com.grapefrukt.exporter.animations {
 	
+	import flash.geom.Matrix;
+	
 	/**
 	 * ...
 	 * @author Martin Jonasson, m@grapefrukt.com
@@ -45,8 +47,10 @@ package com.grapefrukt.exporter.animations {
 		private var _alpha		:Number;
 		private var _scale_factor:Number = 1;
 		private var _zindex		:Number = 0;
+		private var _matrix		:Matrix;
 		
-		public function AnimationFrame(visible:Boolean, x:Number = 0, y:Number = 0, scaleX:Number = 0, scaleY:Number = 0, rotation:Number = 0, alpha:Number = 0, scaleFactor:Number = 1, zindex:Number = 0) {
+		public function AnimationFrame(visible:Boolean, x:Number = 0, y:Number = 0, scaleX:Number = 0, scaleY:Number = 0, rotation:Number = 0,
+									   alpha:Number = 0, scaleFactor:Number = 1, zindex:Number = 0, matrix:Matrix = null) {
 			_visible = visible;
 			_x = x;
 			_y = y;
@@ -56,6 +60,7 @@ package com.grapefrukt.exporter.animations {
 			_alpha = alpha;
 			_scale_factor = scaleFactor;
 			_zindex = zindex;
+			_matrix = matrix;
 			
 			if (_alpha == 0) _visible = false;
 		}
@@ -69,7 +74,7 @@ package com.grapefrukt.exporter.animations {
 		public function get x():Number { return _x * _scale_factor; }
 		public function get visible():Boolean { return _visible; }
 		public function get zindex():Number { return _zindex; }
-		
+		public function get matrix():Matrix { return _matrix; }
 	}
 
 }

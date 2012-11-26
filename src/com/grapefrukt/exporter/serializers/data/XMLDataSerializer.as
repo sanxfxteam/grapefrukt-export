@@ -43,6 +43,7 @@ package com.grapefrukt.exporter.serializers.data {
 	import com.grapefrukt.exporter.textures.VectorTexture;
 	import flash.utils.ByteArray;
 	import flash.geom.Rectangle;
+	import fl.motion.MatrixTransformer;
 	
 	
 	/**
@@ -142,9 +143,19 @@ package com.grapefrukt.exporter.serializers.data {
 			if (frame.visible) {
 				if (!equal(frame.x, 0, Settings.positionPrecision))			xml.@x 			= frame.x.toFixed(Settings.positionPrecision);
 				if (!equal(frame.y, 0, Settings.positionPrecision))			xml.@y 			= frame.y.toFixed(Settings.positionPrecision);
-				if (!equal(frame.scaleX, 1, Settings.scalePrecision)) 		xml.@scaleX 	= frame.scaleX.toFixed(Settings.scalePrecision);
-				if (!equal(frame.scaleY, 1, Settings.scalePrecision)) 		xml.@scaleY 	= frame.scaleY.toFixed(Settings.scalePrecision);
-				if (!equal(frame.rotation, 0, Settings.rotationPrecision)) 	xml.@rotation 	= frame.rotation.toFixed(Settings.rotationPrecision);
+				if (Settings.exportMatrix)
+				{
+					xml.@a = frame.matrix.a.toFixed(Settings.scalePrecision);
+					xml.@b = frame.matrix.b.toFixed(Settings.scalePrecision);
+					xml.@c = frame.matrix.c.toFixed(Settings.scalePrecision);
+					xml.@d = frame.matrix.d.toFixed(Settings.scalePrecision);
+				}
+				else
+				{
+					if (!equal(frame.scaleX, 1, Settings.scalePrecision)) 		xml.@scaleX 	= frame.scaleX.toFixed(Settings.scalePrecision);
+					if (!equal(frame.scaleY, 1, Settings.scalePrecision)) 		xml.@scaleY 	= frame.scaleY.toFixed(Settings.scalePrecision);
+					if (!equal(frame.rotation, 0, Settings.rotationPrecision)) 	xml.@rotation 	= frame.rotation.toFixed(Settings.rotationPrecision);
+				}
 				if (!equal(frame.alpha, 1, Settings.alphaPrecision)) 		xml.@alpha 		= frame.alpha.toFixed(Settings.alphaPrecision);
 			} else {
 				return null;
