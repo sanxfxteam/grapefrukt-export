@@ -146,8 +146,8 @@ package com.grapefrukt.exporter.serializers.data {
 				if (Settings.exportMatrix)
 				{
 					xml.@a = frame.matrix.a.toFixed(Settings.scalePrecision);
-					xml.@b = frame.matrix.b.toFixed(Settings.scalePrecision);
-					xml.@c = frame.matrix.c.toFixed(Settings.scalePrecision);
+					xml.@b = (-frame.matrix.b).toFixed(Settings.scalePrecision);
+					xml.@c = (-frame.matrix.c).toFixed(Settings.scalePrecision);
 					xml.@d = frame.matrix.d.toFixed(Settings.scalePrecision);
 				}
 				else

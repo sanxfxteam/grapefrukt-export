@@ -124,8 +124,8 @@ package com.grapefrukt.exporter.serializers.data {
 				if (Settings.exportMatrix)
 				{
 					_output.writeFloat(frame.matrix.a);
-					_output.writeFloat(frame.matrix.b);
-					_output.writeFloat(frame.matrix.c);
+					_output.writeFloat(-frame.matrix.b);
+					_output.writeFloat(-frame.matrix.c);
 					_output.writeFloat(frame.matrix.d);
 				}
 				else
