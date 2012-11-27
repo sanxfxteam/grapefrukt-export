@@ -123,6 +123,7 @@ package com.grapefrukt.exporter.serializers.data {
 				var partXML:XML = <Part></Part>;
 				partXML.@name = part.name;
 				partXML.@spriteid = part.child.getSpriteId();
+				partXML.@zindex = part.GetZIndex();
 				for (var i:int = 0; i < part.frames.length; i++) {
 					var frameXML:XML = _serialize(part.frames[i]);
 					if (frameXML) {
@@ -157,6 +158,7 @@ package com.grapefrukt.exporter.serializers.data {
 					if (!equal(frame.rotation, 0, Settings.rotationPrecision)) 	xml.@rotation 	= frame.rotation.toFixed(Settings.rotationPrecision);
 				}
 				if (!equal(frame.alpha, 1, Settings.alphaPrecision)) 		xml.@alpha 		= frame.alpha.toFixed(Settings.alphaPrecision);
+				xml.@zindex = frame.zindex;
 			} else {
 				return null;
 			}
